@@ -46,7 +46,6 @@ router.post("/login", async (req, res, next) => {
         try {
             const userFounded = await User.findOne({ email })
             if (userFounded) {
-
                 const passwordCorrect = bcrypt.compareSync(password, userFounded.password)
                 if (passwordCorrect) {
                     const { _id, email, userName } = userFounded;
@@ -80,11 +79,19 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
-router.get("/verify", isAuthenticated,(req, res, next)=>{
-    console.log("payload",req.payload)
-    res.status(200).json(req.payload)
+router.get("/verify",(req, res, next)=>{
+    try{
+        isAuthenticated(req, res, ()=>{
+            console.log("payload",req.payload)
+            if(req.payload === undefined)
+                res.status(401).json({ message: 'Token expirado' });
+            else
+                res.status(200).json(req.payload)
+        })
+    }catch(error){
+            // Otro error al verificar el token
+            return res.status(401).json({ message: 'Error de autenticación' });
+    }
 })
-
-
 
 module.exports = router;
