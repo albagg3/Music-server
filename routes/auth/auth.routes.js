@@ -49,7 +49,7 @@ router.post("/login", async (req, res, next) => {
                 const passwordCorrect = bcrypt.compareSync(password, userFounded.password)
                 if (passwordCorrect) {
                     const { _id, email, userName } = userFounded;
-                
+
                     // Create an object that will be set as the token payload
                     const payload = { _id, email, userName };
 
@@ -62,8 +62,8 @@ router.post("/login", async (req, res, next) => {
                     // Send the token as the response
                     res.status(200).json({ authToken: authToken });
                 }
-                else{
-                    res.status(401).json({message:"Unable to authenticate the user"})
+                else {
+                    res.status(401).json({ message: "Unable to authenticate the user" })
                 }
             }
             else {
@@ -79,19 +79,15 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
-router.get("/verify",(req, res, next)=>{
-    try{
-        isAuthenticated(req, res, ()=>{
-            console.log("payload",req.payload)
-            if(req.payload === undefined)
-                res.status(401).json({ message: 'Token expirado' });
-            else
-                res.status(200).json(req.payload)
-        })
-    }catch(error){
-            // Otro error al verificar el token
-            return res.status(401).json({ message: 'Error de autenticación' });
-    }
+
+router.get("/verify", isAuthenticated, (req, res, next) => {
+    console.log("payload", req.payload)
+    console.log("AUTH", req.tokenExpired)
+    if (req.tokenExpired)
+        res.status(401).json({ message: 'Token expirado' });
+    else
+        res.status(200).json(req.payload)
 })
+
 
 module.exports = router;
