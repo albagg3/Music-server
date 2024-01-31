@@ -6,6 +6,7 @@ const User = require("../../models/User.model");
 const { default: mongoose } = require("mongoose");
 const { isAuthenticated } = require("../../middlewares/jwt.isAuthenticated");
 const spotifyApi = require("../../api/api");
+const { cleanSongsArrFromApi } = require("../../utils/autoNewReleases")
 
 router.post("/createSong", isAuthenticated, async (req, res, next) => {
     const { title, artist, imageURL, previewURI } = req.body;
@@ -38,17 +39,7 @@ router.get("/searchSong", isAuthenticated ,async (req, res, next) => {
         const response = await spotifyApi.searchTracks(song)
         const songsArray = response.body.tracks.items;
         console.log(songsArray);
-
-        const cleanSongsArr = songsArray.map((song) => {
-            const obj = {
-                name: song.name,
-                artist: song.artists[0].name,
-                id: song.id,
-                preview: song.preview_url,
-                imageURL: song.album.images[1].url
-            }
-            return obj;
-        })
+        const cleanSongsArr = cleanSongsArrFromApi(songsArray)
         res.status(200).json({"songs":cleanSongsArr})
     } catch (error) {
         res.status(500).send("something went wrong")
