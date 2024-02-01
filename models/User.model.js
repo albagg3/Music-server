@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
+const mongoose = require("mongoose");
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const userSchema = new Schema(
   {
     userName: {
@@ -19,7 +19,8 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'Password is required.'],
       minLength: [6, 'Password must be at least 6 characters long.']
-    }
+    },
+    posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }]
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`    

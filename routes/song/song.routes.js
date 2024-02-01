@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const Song = require("../../models/Post.model");
 const User = require("../../models/User.model");
+const Comment = require("../../models/Comment.model");
 
 const { default: mongoose } = require("mongoose");
 const { isAuthenticated } = require("../../middlewares/jwt.isAuthenticated");
@@ -10,24 +11,33 @@ const { cleanSongsArrFromApi } = require("../../utils/autoNewReleases")
 
 router.post("/createSong", isAuthenticated, async (req, res, next) => {
     const { title, artist, imageURL, previewURI } = req.body;
+    console.log("BODY:" ,req.body)
     console.log("REQPAYLOAD: ", req.payload);
-    const { email } = req.payload
+    const { email, _id } = req.payload
 
     const owner = await User.find({ email: email })
-    const song = {
-        title,
-        artist,
-        imageURL,
-        previewURI,
-        owner: owner[0]._id
+    console.log(owner.length)
+    if (owner.length > 0)
+    {
+        try {
+            const song = {
+                title,
+                artist,
+                imageURL,
+                previewURI,
+                owner: owner[0]._id
+            }
+            const songCreated = await Song.create(song)
+            const songAddedToUser = await User.findByIdAndUpdate(_id, { $push: { posts: songCreated._id} })
+            res.status(200).json({ song: songCreated})
+        }
+        catch (error) {
+            console.log(error);
+        }
     }
-    try {
-        songCreated = await Song.create(song)
-        // console.log(songCreated);
-        res.status(200).json({ song: songCreated })
-    }
-    catch (error) {
-        console.log(error);
+    else
+    {
+        res.status(404).json({ messsage: "User not found"})
     }
 
 })
@@ -80,5 +90,21 @@ router.post("/addScore", isAuthenticated, async(req, res, next)=>{
     }
 })
 
+router.post("/addCommentToSong", isAuthenticated, async(req, res, next)=>{
+    const { comment } = req.body;
+    const { song }= req.query;
+    const id = req.payload._id;
+    try{
+        const objectId = new mongoose.Types.ObjectId(id);
+        const commentCreated = await Comment.create({comment, owner: objectId})
+        const commentAddedToPost = await Song.findOneAndUpdate({title: song, owner: objectId}, { $push: { comments: commentCreated._id} })
+        res.status(200).json({message:`Comment created: ${commentCreated} and added ${commentAddedToPost}`}); 
+
+    }catch(error){
+        console.log(error)
+    }
+
+
+})
 
 module.exports = router;
