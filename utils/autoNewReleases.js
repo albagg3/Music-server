@@ -20,6 +20,8 @@ const getNewReleases = async() =>{
     try {
         const data = await spotifyApi.getNewReleases({ limit: 5, offset: 0 })
         const dataSongsToPublished = data.body.albums.items;
+        const song = await spotifyApi.searchTracks(dataSongsToPublished[0].name)
+        console.log("SONG", song.body.tracks.items)
         // console.log("DATA", data.body.albums.items);
         const cleanSongsArr = cleanSongsArrFromApi(dataSongsToPublished);
         console.log(cleanSongsArr)
