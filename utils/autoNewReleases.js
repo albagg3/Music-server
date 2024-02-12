@@ -28,9 +28,7 @@ const getNewReleases = async() =>{
         const data = await spotifyApi.getNewReleases({ limit: 5, offset: 0 })
         const newReleasesData = data.body.albums.items;
         
-        const newReleasesArr = data.body.albums.items;
-
-        const newReleasesNames = newReleasesArr.map((song) => song.name)
+        const newReleasesNames = newReleasesData.map((song) => song.name)
         const songsToPublish = await Promise.all(
             newReleasesNames.map(async(title)=>{
             const song = await apiCallforSongData(title)
@@ -38,6 +36,7 @@ const getNewReleases = async() =>{
         })
         )
         const cleanSongsArr = cleanSongsArrFromApi(songsToPublish);
+        //que los usuarios creen una cada uno 
         console.log(cleanSongsArr)
     } catch (error) {
         console.log(error);
