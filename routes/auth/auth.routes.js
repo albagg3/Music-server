@@ -81,8 +81,8 @@ router.post("/login", async (req, res, next) => {
 
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
-    console.log("payload", req.payload)
-    console.log("AUTH", req.tokenExpired)
+    // console.log("payload", req.payload)
+    // console.log("AUTH", req.tokenExpired)
     if (req.tokenExpired)
         res.status(401).json({ message: 'Token expirado' });
     else

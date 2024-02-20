@@ -11,8 +11,8 @@ const { cleanSongsArrFromApi } = require("../../utils/autoNewReleases")
 
 router.post("/createSong", isAuthenticated, async (req, res, next) => {
     const { title, artist, imageURL, previewURI } = req.body;
-    console.log("BODY:" ,req.body)
-    console.log("REQPAYLOAD: ", req.payload);
+    // console.log("BODY:" ,req.body)
+    // console.log("REQPAYLOAD: ", req.payload);
     const { email, _id } = req.payload
 
     const owner = await User.find({ email: email })
@@ -43,12 +43,14 @@ router.post("/createSong", isAuthenticated, async (req, res, next) => {
 })
 
 //This route returns an array of 20 songs depending on the query
-router.get("/searchSong", isAuthenticated ,async (req, res, next) => {
+router.get("/searchSong",isAuthenticated, async (req, res, next) => {
+   
     const song = req.query.song;
+    console.log("SONG",song)
     try {
         const response = await spotifyApi.searchTracks(song)
         const songsArray = response.body.tracks.items;
-        console.log(songsArray);
+        // console.log(songsArray);
         const cleanSongsArr = cleanSongsArrFromApi(songsArray)
         res.status(200).json({"songs":cleanSongsArr})
     } catch (error) {
