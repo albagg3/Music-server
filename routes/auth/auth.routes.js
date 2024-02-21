@@ -36,7 +36,7 @@ router.post("/signup", isValidInput, async (req, res, next) => {
 
 //Verify email and password y and returns a JWT
 router.post("/login", async (req, res, next) => {
-    console.log("LOGIN", req.body)
+    // console.log("LOGIN", req.body)
     // res.json("This is the login");
     const { email, password } = req.body;
     if (email === "" || password === "") {
