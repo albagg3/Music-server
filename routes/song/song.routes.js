@@ -11,12 +11,12 @@ const { cleanSongsArrFromApi } = require("../../utils/autoNewReleases")
 
 router.post("/createSong", isAuthenticated, async (req, res, next) => {
     const { title, artist, imageURL, previewURI } = req.body;
-    // console.log("BODY:" ,req.body)
+    console.log("BODY:" ,req.body)
     // console.log("REQPAYLOAD: ", req.payload);
     const { email, _id } = req.payload
 
     const owner = await User.find({ email: email })
-    console.log(owner.length)
+    // console.log(owner.length)
     if (owner.length > 0)
     {
         try {
